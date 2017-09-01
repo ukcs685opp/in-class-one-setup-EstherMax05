@@ -1,0 +1,94 @@
+#Scenario Informations
+Scenario.name = [Bubblerap24hTTLRun1; Bubblerap24hTTLRun2; Bubblerap24hTTLRun3; Bubblerap24hTTLRun4; Bubblerap24hTTLRun5]
+
+Scenario.simulateConnections = false
+
+Scenario.updateInterval = 1
+#Scenario endTime cambridge experiment
+Scenario.endTime = 1036800
+Scenario.nrofHostGroups = 2
+
+Group.router = DecisionEngineRouter
+DecisionEngineRouter.decisionEngine = community.DistributedBubbleRap
+DecisionEngineRouter.communityDetectAlg = routing.community.KCliqueCommunityDetection
+DecisionEngineRouter.K = 5
+DecisionEngineRouter.familiarThreshold = 700
+DecisionEngineRouter.centralityAlg = routing.community.CWindowCentrality
+
+Group.msgTtl = 1440
+
+#Interfaces Informations
+btInterface.type = SimpleBroadcastInterface
+# Transmit speed of 2 Mbps = 250kBps
+btInterface.transmitSpeed = 250k
+btInterface.transmitRange = 10
+btInterface.scanInterval = 120
+
+#Groups Information
+Group.nrofInterfaces = 1
+Group.interface1 = btInterface
+Group.waitTime = 10, 30
+Group.speed = 0.8, 1.4
+Group.nodeLocation=10,10
+Group.movementModel = StationaryMovement
+
+Group1.groupID = A
+Group1.nrofHosts = 1
+
+Group2.groupID = B
+Group2.nrofHosts = 100
+#35
+# 200 messages of 10K
+Group2.bufferSize = 2M
+
+
+# How many event generators
+Events.nrof = 2
+
+## Trace information
+Events1.class = ExternalEventsQueue
+Events1.filePath = ee/Haggle4-Cam-Imote.csv
+
+## Message creation parameters
+Events2.class = ExternalEventsQueue
+Events2.filePath = ee/1000c_100n_12h.txt
+
+MovementModel.worldSize = 100, 100
+
+#Movement Informations
+MovementModel.rngSeed = [2; 8372; 98092; 18293; 777]
+
+#Reports Informations
+Report.nrofReports = 11
+
+Report.reportDir = reports/
+
+# Report classes to load
+Report.report1 = CommunityDetectionReport
+Report.report2 = MessageStatsReport
+Report.report3 = CreatedMessagesReport
+Report.report4 = MessageDeliveryReport
+Report.report5 = MessageDelayReport
+Report.report6 = DeliveredMessagesReport
+Report.report7 = MessageReport
+Report.report8 = ContactTimesReport
+Report.report9 = InterContactTimesReport
+Report.report10 = ContactsPerHourReport
+Report.report11 = TotalContactTimeReport
+
+## GUI settings
+
+# GUI underlay image settings
+#GUI.UnderlayImage.fileName = data/helsinki_underlay.png
+# Image offset in pixels (x, y)
+GUI.UnderlayImage.offset = 64, 20
+# Scaling factor for the image
+GUI.UnderlayImage.scale = 4.75
+# Image rotation (radians)
+GUI.UnderlayImage.rotate = -0.015
+
+# how many events to show in the log panel (default = 30)
+GUI.EventLogPanel.nrofEvents = 200
+# Regular Expression log filter (see Pattern-class from the Java API for RE-matching details)
+#GUI.EventLogPanel.REfilter = .*p[1-9]<->p[1-9]$
+

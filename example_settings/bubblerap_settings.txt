@@ -1,0 +1,20 @@
+Scenario.name = bubblerap_test_0_1_%%Group.router%%_%%MovementModel.rngSeed%%_%%Scenario.endTime%%
+
+Group.router = BubbleRapRouter
+#BubbleRapRouter.communityDetectAlg = routing.community.KCliqueCommunityDetection
+BubbleRapRouter.k = 5
+BubbleRapRouter.familiarThreshold = 700
+#BubbleRapRouter.centralityAlg = routing.centrality.CWindowCentrality
+
+# how many reports to load
+Report.nrofReports = 3
+# length of the warm up period (simulated seconds)
+Report.warmup = 0
+# default directory of reports (can be overridden per Report with output setting)
+Report.reportDir = reports/
+# Report classes to load
+Report.report1 = MessageStatsReport
+Report.report2 = ContactTimesReport
+Report.report3 = CommunityReport
+#Report.report4 = DeliveryCentralityReport
+#Report.report5 = SimpleCommunityDetectionReport

@@ -1,0 +1,21 @@
+Scenario.name = bubblerap_test_0_1_%%Group.router%%_%%MovementModel.rngSeed%%_%%Scenario.endTime%%
+
+Group.router = DecisionEngineRouter
+DecisionEngineRouter.decisionEngine = pitt.community.DistributedBubbleRap
+DecisionEngineRouter.communityDetectAlg = routing.pitt.community.KCliqueCommunityDetection
+DecisionEngineRouter.K = 5
+DecisionEngineRouter.familiarThreshold = 700
+DecisionEngineRouter.centralityAlg = routing.pitt.community.CWindowCentrality
+
+# how many reports to load
+Report.nrofReports = 4
+# length of the warm up period (simulated seconds)
+Report.warmup = 0
+# default directory of reports (can be overridden per Report with output setting)
+Report.reportDir = reports/
+# Report classes to load
+Report.report1 = MessageStatsReport
+Report.report2 = ContactTimesReport
+Report.report3 = CommunityDetectionReport
+Report.report4 = DeliveryCentralityReport
+#Report.report5 = SimpleCommunityDetectionReport
