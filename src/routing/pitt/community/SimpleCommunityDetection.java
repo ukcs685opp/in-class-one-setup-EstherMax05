@@ -8,8 +8,6 @@ package routing.pitt.community;
 
 import java.util.*;
 
-//import routing.communitydetection.DiBuBB.Duration;
-
 import core.*;
 
 import routing.pitt.Duration;
@@ -46,7 +44,7 @@ import routing.pitt.Duration;
  * 
  * @author PJ Dillon, University of Pittsburgh
  */
-public class SimpleCommunityDetection extends CommunityDetection
+public class SimpleCommunityDetection implements CommunityDetection
 {
 	/** Threshold value for adding a host to the local community -setting id 
 	 * {@value} 
@@ -110,14 +108,13 @@ public class SimpleCommunityDetection extends CommunityDetection
 			 * the size of the peer's familiar set
 			 */
 			
-			// compute set intersection
-			int count=0, peerFsize = scd.familiarSet.size();
-			for(DTNHost h : scd.familiarSet)
-				if(this.localCommunity.contains(h))
-					count++;
-			
+                        //Corey - user Set methods instead of for loops
+                        HashSet<DTNHost> intersection = new HashSet<DTNHost>(this.localCommunity);
+                        intersection.retainAll(scd.familiarSet);
+                        int peerFsize = scd.familiarSet.size();
+                        
 			// add peer to local community if enough nodes in common
-			if(addPeerToMyLocal = ((double)count)/peerFsize > this.lambda)
+			if(addPeerToMyLocal = ((double)intersection.size())/peerFsize > this.lambda)
 			{
 				this.localCommunity.add(peer);
 			}
@@ -128,14 +125,13 @@ public class SimpleCommunityDetection extends CommunityDetection
 		 */
 		if(!scd.localCommunity.contains(myHost))
 		{
-			// compute set intersection
-			int count = 0, myFsize = this.familiarSet.size();
-			for(DTNHost h : this.familiarSet)
-				if(scd.localCommunity.contains(h))
-					count++;
-			
+                        // compute set intersection
+                        HashSet<DTNHost> intersection = new HashSet<DTNHost>(scd.localCommunity);
+                        intersection.retainAll(this.familiarSet);
+                        int myFsize = this.familiarSet.size();
+                        
 			// add this host to local community of peer if enough nodes in common
-			if(addMeToPeerLocal = ((double)count)/myFsize > scd.lambda)
+			if(addMeToPeerLocal = ((double)intersection.size())/myFsize > scd.lambda)
 			{
 				scd.localCommunity.add(myHost);
 			}
@@ -150,19 +146,18 @@ public class SimpleCommunityDetection extends CommunityDetection
 			commUnion.addAll(this.localCommunity);
 			commUnion.addAll(scd.localCommunity);
 			
-			// compute intersection of the two local communities
+                        // compute intersection of the two local communities
 			// (the result is the same from both node's perspective)
-			int count = 0;
-			for(DTNHost h : this.localCommunity)
-				if(scd.localCommunity.contains(h))
-					count++;
-			
+                        //Corey - user Set methods instead of for loops
+                        HashSet<DTNHost> intersection = new HashSet<DTNHost>(this.localCommunity);
+                        intersection.retainAll(scd.localCommunity);
+                        
 			// merge communities if enough nodes are common
-			if(addPeerToMyLocal && count > this.gamma * commUnion.size())
+			if(addPeerToMyLocal && intersection.size() > this.gamma * commUnion.size())
 			{
 				this.localCommunity.addAll(scd.localCommunity);
 			}
-			if(addMeToPeerLocal && count > scd.gamma * commUnion.size())
+			if(addMeToPeerLocal && intersection.size() > scd.gamma * commUnion.size())
 			{
 				scd.localCommunity.addAll(this.localCommunity);
 			}

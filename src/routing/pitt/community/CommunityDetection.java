@@ -26,7 +26,7 @@ import routing.pitt.*;
  * 
  * @author PJ Dillon, University of Pittsburgh
  */
-public abstract class CommunityDetection
+public interface CommunityDetection
 {
 	/**
 	 * Called to inform the object that a new connection was made. 
@@ -35,7 +35,7 @@ public abstract class CommunityDetection
 	 * @param peer Host that connected to this host
 	 * @param peerCD Instance of CommunityDetection residing at the new peer 
 	 */
-	public abstract void newConnection(DTNHost myHost, DTNHost peer, 
+	public void newConnection(DTNHost myHost, DTNHost peer, 
 			CommunityDetection peerCD);
 	
 	/**
@@ -46,7 +46,7 @@ public abstract class CommunityDetection
 	 * @param peerCD Instance of CommunityDetection residing at the lost peer
 	 * @param connHistory Entire connection history between this host and the peer
 	 */
-	public abstract void connectionLost(DTNHost myHost, DTNHost peer, 
+	public void connectionLost(DTNHost myHost, DTNHost peer, 
 			CommunityDetection peerCD, List<Duration> connHistory);
 	
 	/**
@@ -56,7 +56,7 @@ public abstract class CommunityDetection
 	 * @param h Host to consider
 	 * @return true if h is a member of the community, false otherwise
 	 */
-	public abstract boolean isHostInCommunity(DTNHost h);
+	public boolean isHostInCommunity(DTNHost h);
 	
 	/**
 	 * Returns a set of hosts that are members of the local community of this 
@@ -65,12 +65,12 @@ public abstract class CommunityDetection
 	 * 
 	 * @return the Set representation of the local community
 	 */
-	public abstract Set<DTNHost> getLocalCommunity();
+	public Set<DTNHost> getLocalCommunity();
 	
 	/**
 	 * Duplicates this CommunityDetection object.
 	 * 
 	 * @return A semantically equal copy of this CommunityDetection object
 	 */
-	public abstract CommunityDetection replicate();
+	public CommunityDetection replicate();
 }

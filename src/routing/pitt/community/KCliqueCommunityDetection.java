@@ -54,7 +54,7 @@ import routing.pitt.Duration;
  * 
  * @author PJ Dillon, University of Pittsburgh
  */
-public class KCliqueCommunityDetection extends CommunityDetection
+public class KCliqueCommunityDetection implements CommunityDetection
 {
 	public static final String K_SETTING = "K";
 	public static final String FAMILIAR_SETTING = "familiarThreshold";

@@ -2,12 +2,10 @@ package routing.pitt.community;
 
 import java.util.*;
 
-//import routing.communitydetection.DiBuBB.Duration;
-
 import core.*;
 import routing.pitt.Duration;
 
-public class ModularityCommunityDetection extends CommunityDetection
+public class ModularityCommunityDetection implements CommunityDetection
 {
 	//public static final String LAMBDA_SETTING = "lambda";
 	public static final String GAMMA_SETTING = "gamma";

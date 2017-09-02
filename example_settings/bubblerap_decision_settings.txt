@@ -1,13 +1,25 @@
-Scenario.name = bubblerap_test_0_1_%%Group.router%%_%%MovementModel.rngSeed%%_%%Scenario.endTime%%
+Scenario.name = bubblerap_test3_0_1_%%Group.router%%_%%MovementModel.rngSeed%%_%%Scenario.endTime%%
 
 Group.router = DecisionEngineRouter
-DecisionEngineRouter.decisionEngine = pitt.community.DistributedBubbleRap
+DecisionEngineRouter.decisionEngine = decisionengine.DistributedBubbleRap
+#Community detection Alg - can be KCliqueCommunityDetection, ModularityCommunityDetection, or SimpleCommunityDetection
 DecisionEngineRouter.communityDetectAlg = routing.pitt.community.KCliqueCommunityDetection
+#Community detection common peer threshold for adding a connected peer to your clique
 DecisionEngineRouter.K = 5
-DecisionEngineRouter.nrOfEpochsToAvg = 5
-DecisionEngineRouter.timeWindow = 21600
+#Community detection clique threshold to place someone in the clique 
 DecisionEngineRouter.familiarThreshold = 700
-DecisionEngineRouter.centralityAlg = routing.pitt.community.CWindowCentrality
+#Community detection - SimpleCommunityDetection - for adding a host to the local community
+DecisionEngineRouter.lambda = 5
+#Community detection - SimpleCommunityDetection - for avalue for merging the local community with a peer
+DecisionEngineRouter.gamma = 10
+#Centrality Alg - can be CWindowCentrality, AvgDegreeCentrality, DegreeCentrality, SWindowCentrality
+DecisionEngineRouter.centralityAlg = routing.pitt.centrality.CWindowCentrality
+#Centrality Alg - window size of each epoch
+DecisionEngineRouter.timeWindow = 21600
+#Centrality Alg - Number of epochs to average
+DecisionEngineRouter.nrOfEpochsToAvg = 5
+
+
 
 # how many reports to load
 Report.nrofReports = 5
