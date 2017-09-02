@@ -10,6 +10,8 @@ import java.util.*;
 
 import core.*;
 
+import routing.pitt.*;
+
 /**
  * <p>An abstraction of community detection algorithms that track and assemble a 
  * set of nodes defined to the local community of this object. Each of the 
@@ -24,7 +26,7 @@ import core.*;
  * 
  * @author PJ Dillon, University of Pittsburgh
  */
-public interface CommunityDetection
+public abstract class CommunityDetection
 {
 	/**
 	 * Called to inform the object that a new connection was made. 
@@ -33,7 +35,7 @@ public interface CommunityDetection
 	 * @param peer Host that connected to this host
 	 * @param peerCD Instance of CommunityDetection residing at the new peer 
 	 */
-	public void newConnection(DTNHost myHost, DTNHost peer, 
+	public abstract void newConnection(DTNHost myHost, DTNHost peer, 
 			CommunityDetection peerCD);
 	
 	/**
@@ -44,7 +46,7 @@ public interface CommunityDetection
 	 * @param peerCD Instance of CommunityDetection residing at the lost peer
 	 * @param connHistory Entire connection history between this host and the peer
 	 */
-	public void connectionLost(DTNHost myHost, DTNHost peer, 
+	public abstract void connectionLost(DTNHost myHost, DTNHost peer, 
 			CommunityDetection peerCD, List<Duration> connHistory);
 	
 	/**
@@ -54,7 +56,7 @@ public interface CommunityDetection
 	 * @param h Host to consider
 	 * @return true if h is a member of the community, false otherwise
 	 */
-	public boolean isHostInCommunity(DTNHost h);
+	public abstract boolean isHostInCommunity(DTNHost h);
 	
 	/**
 	 * Returns a set of hosts that are members of the local community of this 
@@ -63,12 +65,12 @@ public interface CommunityDetection
 	 * 
 	 * @return the Set representation of the local community
 	 */
-	public Set<DTNHost> getLocalCommunity();
+	public abstract Set<DTNHost> getLocalCommunity();
 	
 	/**
 	 * Duplicates this CommunityDetection object.
 	 * 
 	 * @return A semantically equal copy of this CommunityDetection object
 	 */
-	public CommunityDetection replicate();
+	public abstract CommunityDetection replicate();
 }

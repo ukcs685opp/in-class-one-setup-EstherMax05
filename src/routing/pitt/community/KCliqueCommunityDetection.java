@@ -10,6 +10,7 @@ import java.util.*;
 //import routing.communitydetection.DiBuBB.Duration;
 
 import core.*;
+import routing.pitt.Duration;
 
 /**
  * <p>Performs the K-Clique Community Detection algorithm described in 
@@ -53,7 +54,7 @@ import core.*;
  * 
  * @author PJ Dillon, University of Pittsburgh
  */
-public class KCliqueCommunityDetection implements CommunityDetection
+public class KCliqueCommunityDetection extends CommunityDetection
 {
 	public static final String K_SETTING = "K";
 	public static final String FAMILIAR_SETTING = "familiarThreshold";

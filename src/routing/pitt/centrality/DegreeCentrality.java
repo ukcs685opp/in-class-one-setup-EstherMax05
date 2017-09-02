@@ -4,12 +4,15 @@
  * Copyright 2010 by University of Pittsburgh, released under GPLv3.
  * 
  */
-package routing.pitt.community;
+package routing.pitt.centrality;
 
 import java.util.List;
 import java.util.Map;
 
 import core.*;
+
+import routing.pitt.Duration;
+import routing.pitt.community.*;
 
 /**
  * <p>Computes the global and local centrality of a node using a version of the 
@@ -45,7 +48,7 @@ import core.*;
  * @see AvgDegreeCentrality
  * @see Centrality
  */
-public class DegreeCentrality implements Centrality
+public class DegreeCentrality extends Centrality
 {
 	public DegreeCentrality(Settings s){}
 	public DegreeCentrality(DegreeCentrality proto){}

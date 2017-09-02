@@ -4,11 +4,13 @@
  * Copyright 2010 by University of Pittsburgh, released under GPLv3.
  * 
  */
-package routing.pitt.community;
+package routing.pitt.centrality;
 
 import java.util.*;
 
 import core.*;
+import routing.pitt.*;
+import routing.pitt.community.*;
 
 /**
  * <p>
@@ -32,7 +34,7 @@ import core.*;
  * 
  * @author PJ Dillon, University of Pittsburgh
  */
-public interface Centrality
+public abstract class Centrality
 {
 	/**
 	 * Returns the computed global centrality based on the connection history
@@ -41,7 +43,7 @@ public interface Centrality
 	 * @param connHistory Contact History on which to compute centrality
 	 * @return Value corresponding to the global centrality
 	 */
-	public double getGlobalCentrality(Map<DTNHost, List<Duration>> connHistory);
+	public abstract double getGlobalCentrality(Map<DTNHost, List<Duration>> connHistory);
 	
 	/**
 	 * Returns the computed local centrality based on the connection history and
@@ -51,7 +53,7 @@ public interface Centrality
 	 * @param cd CommunityDetection object that knows the local community
 	 * @return Value corresponding to the local centrality
 	 */
-	public double getLocalCentrality(Map<DTNHost, List<Duration>> connHistory, 
+	public abstract double getLocalCentrality(Map<DTNHost, List<Duration>> connHistory, 
 			CommunityDetection cd);
 	
 	/**
@@ -60,5 +62,5 @@ public interface Centrality
 	 * 
 	 * @return A duplicate Centrality instance
 	 */
-	public Centrality replicate();
+	public abstract Centrality replicate();
 }

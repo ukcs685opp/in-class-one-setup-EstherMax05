@@ -4,12 +4,14 @@
  * Copyright 2010 by University of Pittsburgh, released under GPLv3.
  * 
  */
-package routing.pitt.community;
+package routing.decisionengine;
 
 import java.util.*;
 
 import core.*;
 import routing.*;
+import routing.pitt.Duration;
+import routing.pitt.community.*;
 
 /**
  * <p>Implements the LABEL routing protocol described in <em>How Small Labels 

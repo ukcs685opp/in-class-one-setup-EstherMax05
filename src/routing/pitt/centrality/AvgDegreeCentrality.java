@@ -4,11 +4,12 @@
  * Copyright 2010 by University of Pittsburgh, released under GPLv3.
  * 
  */
-package routing.pitt.community;
+package routing.pitt.centrality;
 
 import java.util.*;
-
 import core.*;
+import routing.pitt.Duration;
+import routing.pitt.community.*;
 
 /**
  * <p>Computes the global and local centrality of a node using the average 
@@ -64,7 +65,7 @@ import core.*;
  * @see Centrality
  * @see DegreeCentrality
  */
-public class AvgDegreeCentrality implements Centrality
+public class AvgDegreeCentrality extends Centrality
 {
 	/** Width of time window into which to group past history -setting id 
 	   {@value} */
@@ -110,6 +111,10 @@ public class AvgDegreeCentrality implements Centrality
 		if(SimClock.getIntTime() - this.lastGlobalComputationTime < COMPUTE_INTERVAL)
 			return globalCentrality;
 		
+                /*Corey - I believe this is a BUG - epochCount remains 0 before 
+                CENTRALITY_TIME_WINDOW, and will become infinite for larger 
+                simulation endTimes, need to have a indow to 
+                average over*/
 		// initialize
 		int epochCount = SimClock.getIntTime() / CENTRALITY_TIME_WINDOW;
 		int[] centralities = new int[epochCount];
@@ -132,7 +137,7 @@ public class AvgDegreeCentrality implements Centrality
 				int timePassed = (int)(timeNow - d.end);
 				
 				// if we reached the end of the last epoch, we're done with this node
-				if(timePassed > CENTRALITY_TIME_WINDOW * epochCount)
+				if(timePassed >= CENTRALITY_TIME_WINDOW * epochCount)
 					break;
 				
 				// compute the epoch this contact belongs to
@@ -166,6 +171,10 @@ public class AvgDegreeCentrality implements Centrality
 		if(SimClock.getIntTime() - this.lastLocalComputationTime < COMPUTE_INTERVAL)
 			return localCentrality;
 		
+                /*Corey - I believe this is a BUG - epochCount remains 0 before 
+                CENTRALITY_TIME_WINDOW, and will become infinite for larger 
+                simulation endTimes, need to have a indow to 
+                average over*/
 		// centralities will hold the count of unique encounters in each epoch
 		int epochCount = SimClock.getIntTime() / CENTRALITY_TIME_WINDOW;
 		int[] centralities = new int[epochCount];

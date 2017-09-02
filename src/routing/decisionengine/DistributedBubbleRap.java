@@ -4,7 +4,7 @@
  * Copyright 2010 by University of Pittsburgh, released under GPLv3.
  * 
  */
-package routing.pitt.community;
+package routing.decisionengine;
 
 import java.util.*;
 
@@ -12,6 +12,12 @@ import core.*;
 import routing.DecisionEngineRouter;
 import routing.MessageRouter;
 import routing.RoutingDecisionEngine;
+import routing.pitt.Duration;
+import routing.pitt.centrality.Centrality;
+import routing.pitt.community.CommunityDetection;
+import routing.pitt.community.CommunityDetectionEngine;
+import routing.pitt.centrality.SWindowCentrality;
+import routing.pitt.community.SimpleCommunityDetection;
 
 /**
  * <p>Implements the Distributed BubbleRap Routing Algorithm from Hui et al. 

@@ -1,4 +1,4 @@
-package routing.pitt.community;
+package routing.pitt;
 
 /**
  * A helper class for the community package that stores a start and end value
@@ -10,10 +10,10 @@ package routing.pitt.community;
 public class Duration
 {
 	/** The start value */
-	double start;
+	public double start;
 	
 	/** The end value */
-	double end;
+	public double end;
 	
 	/**
 	 * Standard constructor that assigns s to start and e to end.

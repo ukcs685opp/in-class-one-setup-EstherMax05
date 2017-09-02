@@ -4,12 +4,15 @@
  * Copyright 2010 by University of Pittsburgh, released under GPLv3.
  * 
  */
-package routing.pitt.community;
+package routing.pitt.centrality;
 
 import java.util.List;
 import java.util.Map;
 
 import core.*;
+
+import routing.pitt.Duration;
+import routing.pitt.community.*;
 
 /**
  * <p>Computes the centrality of a node using the SWindow centrality algorithm 
@@ -53,7 +56,7 @@ import core.*;
  * 
  * @author PJ Dillon, University of Pittsburgh
  */
-public class SWindowCentrality implements Centrality
+public class SWindowCentrality extends Centrality
 {
 	/** length of time into the past to consider -setting id {@value} */
 	public static final String CENTRALITY_WINDOW_SETTING = "timeWindow";

@@ -4,11 +4,13 @@
  * Copyright 2010 by University of Pittsburgh, released under GPLv3.
  * 
  */
-package routing.pitt.community;
+package routing.pitt.centrality;
 
 import java.util.*;
-
 import core.*;
+
+import routing.pitt.Duration;
+import routing.pitt.community.*;
 
 /**
  * <p>Computes the global and local centrality of a node using the CWindow 
@@ -60,7 +62,7 @@ import core.*;
  * @author PJ Dillon, University of Pittsburgh
  * @see Centrality
  */
-public class CWindowCentrality implements Centrality
+public class CWindowCentrality extends Centrality
 {
 	/** length of time to consider in each epoch -setting id {@value} */
 	public static final String CENTRALITY_WINDOW_SETTING = "timeWindow";

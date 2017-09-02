@@ -12,6 +12,8 @@ import java.util.*;
 
 import core.*;
 
+import routing.pitt.Duration;
+
 /**
  * <p>Performs the SIMPLE Community Detection algorithm described in 
  * <em>Distributed Community Detection in Delay Tolerant Networks</em> by Pan
@@ -44,7 +46,7 @@ import core.*;
  * 
  * @author PJ Dillon, University of Pittsburgh
  */
-public class SimpleCommunityDetection implements CommunityDetection
+public class SimpleCommunityDetection extends CommunityDetection
 {
 	/** Threshold value for adding a host to the local community -setting id 
 	 * {@value} 
