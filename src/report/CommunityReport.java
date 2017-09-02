@@ -18,21 +18,18 @@
 package report;
 
 import core.DTNHost;
-import core.SimClock;
 import core.SimScenario;
-import core.UpdateListener;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import routing.MessageRouter;
-import routing.community.ReportCommunity;
-
+import routing.CommunityAndRankRouter;
 /**
  * 
  * Report the all the nodes' communities.
  * 
  */
-public class CommunityReport extends Report implements UpdateListener {
-
-	private int simulationDuration;
+public class CommunityReport extends Report {
 
 	/**
 	 * 
@@ -41,28 +38,40 @@ public class CommunityReport extends Report implements UpdateListener {
 	 */
 	public CommunityReport() {
 		init();
-		simulationDuration = (int) Math.floor(SimScenario.getInstance().getEndTime());
 	}
 
 	@Override
-	public void updated(List<DTNHost> hosts) {
-		int curTime = SimClock.getIntTime();
-
-		// If it is the end of the simulation it is time to write the
-		// communities
-		if (curTime % simulationDuration == 0) {
-			for (DTNHost host : hosts) {
-				MessageRouter router = host.getRouter();
-				if (router instanceof ReportCommunity) {
-					ReportCommunity report = (ReportCommunity) router;
-					StringBuilder strBuilder = new StringBuilder();
-					strBuilder.append("" + host.getAddress() + " ");
-					for (DTNHost h : report.getCommunity()) {
-						strBuilder.append("" + h.getAddress() + " ");
-					}
-					this.write(strBuilder.toString());
-				}
-			}
-		}
-	}
+        public void done() {
+		
+            List<DTNHost> hosts = SimScenario.getInstance().getHosts();
+            List<Set<DTNHost>> communities = new LinkedList<Set<DTNHost>>();
+            
+            for (DTNHost host : hosts) {
+                MessageRouter router = host.getRouter();
+		if (router instanceof CommunityAndRankRouter) {
+                    CommunityAndRankRouter cr = (CommunityAndRankRouter) router;
+                    
+                    boolean alreadyHaveCommunity = false;
+                    Set<DTNHost> nodeComm = cr.getCommunity();
+			
+                    // Test to see if another node already reported this community
+                    for(Set<DTNHost> c : communities)
+                    {
+                        if(c.containsAll(nodeComm) && nodeComm.containsAll(c))
+                        {
+                            alreadyHaveCommunity = true;
+			}	
+                    }
+			
+                    if(!alreadyHaveCommunity && nodeComm.size() > 0)
+                    {
+                        communities.add(nodeComm);
+                    } 
+                }
+            }
+            // print each community and its size out to the file
+            for(Set<DTNHost> c : communities)
+		write("" + c.size() + ' ' + c);
+            super.done();
+        }
 }

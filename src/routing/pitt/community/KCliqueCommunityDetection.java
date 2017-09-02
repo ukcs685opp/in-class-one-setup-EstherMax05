@@ -113,9 +113,36 @@ public class KCliqueCommunityDetection implements CommunityDetection
 			/*
 			 * 
 			 */
-			
+			//Corey - user Set methods instead of for loops
+                        HashSet<DTNHost> intersection = new HashSet<DTNHost>(this.localCommunity);
+                        intersection.retainAll(scd.familiarSet);
+                        if (intersection.size() >= (this.k - 1)) {
+                            
+                            this.localCommunity.add(peer);
+                            this.familiarsOfMyCommunity.put(peer, scd.familiarSet);
+                            
+                            // search the peer's local community for other nodes with K in common
+                            // (like a transitivity property)
+                        	for(DTNHost h : scd.localCommunity)
+				{
+					if(h == myHost || h == peer) continue;
+					
+                                        HashSet<DTNHost> intersectionOfFamiliar = new HashSet<DTNHost>(this.localCommunity);
+                                        intersectionOfFamiliar.retainAll(scd.familiarsOfMyCommunity.get(h));
+                                        
+                                        if (intersectionOfFamiliar.size() >= (this.k - 1)) {
+                                            
+                                            this.localCommunity.add(h);
+                                            this.familiarsOfMyCommunity.put(h, 
+								scd.familiarsOfMyCommunity.get(h));
+                                            
+                                        }
+				}
+			}
+                          
+                        //Original
 			// compute the intersection size
-			int count=0;
+			/*int count=0;
 			for(DTNHost h : scd.familiarSet)
 				if(this.localCommunity.contains(h))
 					count++;
@@ -146,12 +173,41 @@ public class KCliqueCommunityDetection implements CommunityDetection
 								scd.familiarsOfMyCommunity.get(h));
 					}
 				}
-			}
+			}*/
 		}
 		
 		// Repeat process from peer's perspective
 		if(!scd.localCommunity.contains(myHost))
 		{
+                    //Corey - user Set methods instead of for loops
+                        HashSet<DTNHost> intersection = new HashSet<DTNHost>(scd.localCommunity);
+                        intersection.retainAll(this.familiarSet);
+                        if (intersection.size() >= (scd.k - 1)) {
+                            
+                            scd.localCommunity.add(myHost);
+                            scd.familiarsOfMyCommunity.put(myHost, this.familiarSet);
+                            
+                            // search the peer's local community for other nodes with K in common
+                            // (like a transitivity property)
+                        	for(DTNHost h : this.localCommunity)
+				{
+					if(h == myHost || h == peer) continue;
+					
+                                        HashSet<DTNHost> intersectionOfFamiliar = new HashSet<DTNHost>(scd.localCommunity);
+                                        intersectionOfFamiliar.retainAll(this.familiarsOfMyCommunity.get(h));
+                                        
+                                        if (intersectionOfFamiliar.size() >= (scd.k - 1)) {
+                                            
+                                            scd.localCommunity.add(h);
+                                            scd.familiarsOfMyCommunity.put(h, 
+								this.familiarsOfMyCommunity.get(h));
+                                            
+                                        }
+				}
+			}
+                    
+                        //Original
+                    /*
 			int count = 0;
 			for(DTNHost h : this.familiarSet)
 				if(scd.localCommunity.contains(h))
@@ -175,7 +231,7 @@ public class KCliqueCommunityDetection implements CommunityDetection
 								this.familiarsOfMyCommunity.get(h));
 					}
 				}
-			}
+			}*/
 		}
 	}
 	

@@ -4,11 +4,13 @@ Group.router = DecisionEngineRouter
 DecisionEngineRouter.decisionEngine = pitt.community.DistributedBubbleRap
 DecisionEngineRouter.communityDetectAlg = routing.pitt.community.KCliqueCommunityDetection
 DecisionEngineRouter.K = 5
+DecisionEngineRouter.nrOfEpochsToAvg = 5
+DecisionEngineRouter.timeWindow = 21600
 DecisionEngineRouter.familiarThreshold = 700
 DecisionEngineRouter.centralityAlg = routing.pitt.community.CWindowCentrality
 
 # how many reports to load
-Report.nrofReports = 4
+Report.nrofReports = 5
 # length of the warm up period (simulated seconds)
 Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
@@ -18,4 +20,5 @@ Report.report1 = MessageStatsReport
 Report.report2 = ContactTimesReport
 Report.report3 = CommunityDetectionReport
 Report.report4 = DeliveryCentralityReport
+Report.report5 = CentralityReport
 #Report.report5 = SimpleCommunityDetectionReport

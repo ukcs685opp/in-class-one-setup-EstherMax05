@@ -41,6 +41,8 @@ public class CWindowCentrality extends Centrality {
      * {@value}
      */
     public static final String COMPUTATION_INTERVAL_SETTING = "computeInterval";
+    /** Number of time windows over which to average -setting id {@value} */
+	public static final String EPOCH_COUNT_SETTING = "nrOfEpochsToAvg";
 
     /**
      * Time to wait before recomputing centrality values (node degree)
@@ -50,6 +52,8 @@ public class CWindowCentrality extends Centrality {
      * Width of each time interval in which to count the node's degree
      */
     protected static int CENTRALITY_TIME_WINDOW = 86400; // 24 hrs, from literature
+    /** Number of time intervals to average the node's degree over */
+    protected static int EPOCH_COUNT = 5;
 
     /**
      * Saved global centrality from last computation
@@ -81,6 +85,9 @@ public class CWindowCentrality extends Centrality {
         if (s.contains(COMPUTATION_INTERVAL_SETTING)) {
             COMPUTE_INTERVAL = s.getInt(COMPUTATION_INTERVAL_SETTING);
         }
+        
+        if(s.contains(EPOCH_COUNT_SETTING))
+			EPOCH_COUNT = s.getInt(EPOCH_COUNT_SETTING);
     }
 
     /**
@@ -100,14 +107,18 @@ public class CWindowCentrality extends Centrality {
             return globalCentrality;
         }
 
+        /*Corey - BUG - this number remains 0 before CENTRALITY_TIME_WINDOW, 
+        and become infinite for larger simulations, need to have a indow to 
+        average over*/
         // initialize
-        int epochCount = SimClock.getIntTime() / CENTRALITY_TIME_WINDOW;
-        int[] centralities = new int[epochCount];
+        //int epochCount = SimClock.getIntTime() / CENTRALITY_TIME_WINDOW;
+        
+        int[] centralities = new int[EPOCH_COUNT];
         int epoch, timeNow = SimClock.getIntTime();
         Map<Integer, Set<DTNHost>> nodesCountedInEpoch
                 = new HashMap<Integer, Set<DTNHost>>();
 
-        for (int i = 0; i < epochCount; i++) {
+        for (int i = 0; i < EPOCH_COUNT; i++) {
             nodesCountedInEpoch.put(i, new HashSet<DTNHost>());
         }
 
@@ -121,7 +132,7 @@ public class CWindowCentrality extends Centrality {
                 int timePassed = (int) (timeNow - d.end);
 
                 // if we reached the end of the last epoch, we're done with this node
-                if (timePassed >= CENTRALITY_TIME_WINDOW * epochCount) {
+                if (timePassed >= CENTRALITY_TIME_WINDOW * EPOCH_COUNT) {
                     break;
                 }
 
@@ -142,10 +153,10 @@ public class CWindowCentrality extends Centrality {
 
         // compute and return average node degree
         int sum = 0;
-        for (int i = 0; i < epochCount; i++) {
+        for (int i = 0; i < EPOCH_COUNT; i++) {
             sum += centralities[i];
         }
-        this.globalCentrality = ((double) sum) / epochCount;
+        this.globalCentrality = ((double) sum) / EPOCH_COUNT;
 
         this.lastGlobalComputationTime = SimClock.getIntTime();
 
@@ -159,13 +170,17 @@ public class CWindowCentrality extends Centrality {
         }
 
         // centralities will hold the count of unique encounters in each epoch
-        int epochCount = SimClock.getIntTime() / CENTRALITY_TIME_WINDOW;
-        int[] centralities = new int[epochCount];
+        /*Corey - BUG - this number remains 0 before CENTRALITY_TIME_WINDOW, 
+        and become infinite for larger simulations, need to have a indow to 
+        average over*/
+        
+        //int epochCount = SimClock.getIntTime() / CENTRALITY_TIME_WINDOW;
+        int[] centralities = new int[EPOCH_COUNT];
         int epoch, timeNow = SimClock.getIntTime();
         Map<Integer, Set<DTNHost>> nodesCountedInEpoch
                 = new HashMap<Integer, Set<DTNHost>>();
 
-        for (int i = 0; i < epochCount; i++) {
+        for (int i = 0; i < EPOCH_COUNT; i++) {
             nodesCountedInEpoch.put(i, new HashSet<DTNHost>());
         }
 
@@ -185,7 +200,7 @@ public class CWindowCentrality extends Centrality {
                 int timePassed = (int) (timeNow - d.end);
 
                 // if we reached the end of the last epoch, we're done with this node
-                if (timePassed >= CENTRALITY_TIME_WINDOW * epochCount) {
+                if (timePassed >= CENTRALITY_TIME_WINDOW * EPOCH_COUNT) {
                     break;
                 }
 
@@ -206,10 +221,10 @@ public class CWindowCentrality extends Centrality {
 
         // compute and return average node degree
         int sum = 0;
-        for (int i = 0; i < epochCount; i++) {
+        for (int i = 0; i < EPOCH_COUNT; i++) {
             sum += centralities[i];
         }
-        this.localCentrality = ((double) sum) / epochCount;
+        this.localCentrality = ((double) sum) / EPOCH_COUNT;
 
         this.lastLocalComputationTime = SimClock.getIntTime();
 

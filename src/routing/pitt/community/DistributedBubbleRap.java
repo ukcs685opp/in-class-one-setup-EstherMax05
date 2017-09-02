@@ -232,12 +232,12 @@ public class DistributedBubbleRap
 		return community.isHostInCommunity(h);
 	}
 	
-	protected double getLocalCentrality()
+	public double getLocalCentrality()
 	{
 		return this.centrality.getLocalCentrality(connHistory, community);
 	}
 	
-	protected double getGlobalCentrality()
+	public double getGlobalCentrality()
 	{
 		return this.centrality.getGlobalCentrality(connHistory);
 	}
