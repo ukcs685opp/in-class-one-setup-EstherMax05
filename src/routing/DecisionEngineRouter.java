@@ -3,7 +3,7 @@ package routing;
 import java.util.*;
 
 import core.*;
-import static core.Constants.DEBUG;
+//import static core.Constants.DEBUG;
 import util.Tuple;
 
 /**
@@ -156,19 +156,7 @@ public class DecisionEngineRouter extends ActiveRouter
                     return true;
                     
 		}
-                //Original
-                /*
-		if(decider.newMessage(m))
-		{
-			if(m.getId().equals("M14"))
-				System.out.println("Host: " + getHost() + "Creating M14");
-			makeRoomForNewMessage(m.getSize());
-            m.setTtl(this.msgTtl);
-			addToMessages(m, true);
-			
-			findConnectionsForNewMessage(m, getHost());
-			return true;
-		}*/
+                
 		return false;
 	}
         	
@@ -213,8 +201,10 @@ public class DecisionEngineRouter extends ActiveRouter
 		Collection<Message> msgs = getMessageCollection();
 		for(Message m : msgs)
 		{
-			if(decider.shouldSendMessageToHost(m, otherNode))
+			if(decider.shouldSendMessageToHost(m, otherNode)){
 				outgoingMessages.add(new Tuple<Message,Connection>(m, con));
+                                
+                        }
                          
 		}
 	}
@@ -225,9 +215,14 @@ public class DecisionEngineRouter extends ActiveRouter
 		DTNHost myHost = getHost();
 		DTNHost otherNode = con.getOtherNode(myHost);
 		//DecisionEngineRouter otherRouter = (DecisionEngineRouter)otherNode.getRouter();
+                /*
+                if(myHost.name.equals("c42") || otherNode.name.equals("c42")){
+                    System.out.println( SimClock.getTime() + " " + con + " "+ myHost); 
+               
+                }
+              */
 		
 		decider.connectionDown(myHost, otherNode);
-		
 		conStates.remove(con);
 		
 		/*
@@ -341,31 +336,27 @@ public class DecisionEngineRouter extends ActiveRouter
 	@Override
 	protected int startTransfer(Message m, Connection con)
 	{
-                /*Corey - DO NOT call super, deletes messages based on 
-                tombstones and decider as opposed to final dest only*/
-		int retVal;
-		
-		if (!con.isReadyForTransfer()) {
-			return TRY_LATER_BUSY;
-		}
-		
-		retVal = con.startTransfer(getHost(), m);
-		if (retVal == RCV_OK) { // started transfer
-			addToSendingConnections(con);
-		}
-		else if(tombstoning && retVal == DENIED_LOW_RESOURCES)
-		{
-			this.deleteMessage(m.getId(), false);
-			tombstones.add(m.getId());
-		}
-		else if (deleteDelivered && (retVal == DENIED_OLD || retVal == DENIED_LOW_RESOURCES) && 
+            int retVal = super.startTransfer(m, con);
+            
+            if(tombstoning && retVal == DENIED_LOW_RESOURCES)
+            {
+                if (this.hasMessage(m.getId())){
+                    this.deleteMessage(m.getId(), false);
+                    tombstones.add(m.getId());
+                }
+            }
+            else if (deleteDelivered && (retVal == DENIED_OLD || retVal == DENIED_LOW_RESOURCES) && 
 				decider.shouldDeleteOldMessage(m, con.getOtherNode(getHost()))) {
-			/* final recipient has already received the msg -> delete it */
+			// final recipient has already received the msg -> delete it 
 			//if(m.getId().equals("M14"))
 			//	System.out.println("Host: " + getHost() + " told to delete M14");
-			this.deleteMessage(m.getId(), false);
-		}
-                
+                        
+                        if (this.hasMessage(m.getId())){
+                            this.deleteMessage(m.getId(), false);
+                        }
+			
+            }
+            
 		return retVal;
 	}
 
@@ -373,7 +364,7 @@ public class DecisionEngineRouter extends ActiveRouter
 	public int receiveMessage(Message m, DTNHost from)
 	{
 		if(isDeliveredMessage(m) || (tombstoning && tombstones.contains(m.getId())))
-			return DENIED_OLD;
+                    return DENIED_OLD;
 			
 		return super.receiveMessage(m, from);
 	}
@@ -382,61 +373,10 @@ public class DecisionEngineRouter extends ActiveRouter
 	@Override
 	public Message messageTransferred(String id, DTNHost from)
 	{
-                /*Corey - DO NOT call super, works slughtly diff for pub/sub*/
-            
-                Message incoming = removeFromIncomingBuffer(id, from);
-                boolean isFinalRecipient;
-		boolean isFirstDelivery; // is this first delivered instance of the msg
-	
-		if (incoming == null) {
-			throw new SimError("No message with ID " + id + " in the incoming "+
-					"buffer of " + getHost());
-		}
-		
-		incoming.setReceiveTime(SimClock.getTime());
-		
-		Message outgoing = incoming;
-		for (Application app : getApplications(incoming.getAppID())) {
-			// Note that the order of applications is significant
-			// since the next one gets the output of the previous.
-			outgoing = app.handle(outgoing, getHost());
-			if (outgoing == null) break; // Some app wanted to drop the message
-		}
-		
-		Message aMessage = (outgoing==null)?(incoming):(outgoing);
-		
-		isFinalRecipient = decider.isFinalDest(aMessage, getHost());
-		isFirstDelivery =  isFinalRecipient && 
-			!isDeliveredMessage(aMessage);
-		
-		if (outgoing!=null && decider.shouldSaveReceivedMessage(aMessage, getHost())) 
-		{
-			// not the final recipient and app doesn't want to drop the message
-			// -> put to buffer
-			addToMessages(aMessage, false);
-			
-			// Determine any other connections to which to forward a message
-			findConnectionsForNewMessage(aMessage, from);
-		}
-		
-		if (isFirstDelivery)
-		{
-			this.deliveredMessages.put(id, aMessage);
-		}
-                
-                //Corey - added to make compliant with updated MessageRouter 1.6
-                if (outgoing == null) {
-			// Blacklist messages that an app wants to drop.
-			// Otherwise the peer will just try to send it back again.
-			this.blacklistedMessages.put(id, null);
-		}
-		
-		for (MessageListener ml : this.mListeners) {
-			ml.messageTransferred(aMessage, from, getHost(),
-					isFirstDelivery);
-		}
-                //Corey - added in super and need calls, can't use because of pub/sub
-                /*Message incoming = super.messageTransferred(id, from);
+                /*Corey - added in super and need calls, to account for delivering to 
+                final receipient. Also allows us not have to touch private vars in MessageRouter
+                */
+                Message incoming = super.messageTransferred(id, from);
                 
                 //Does this process twice because of super call, but it might be needed, not sure
                 Message outgoing = incoming;
@@ -457,53 +397,7 @@ public class DecisionEngineRouter extends ActiveRouter
 		{
 			// Determine any other connections to which to forward a message
 			findConnectionsForNewMessage(aMessage, from);
-		}*/
-                
-                //Original
-                /*
-		Message incoming = removeFromIncomingBuffer(id, from);
-	
-		if (incoming == null) {
-			throw new SimError("No message with ID " + id + " in the incoming "+
-					"buffer of " + getHost());
 		}
-		
-		incoming.setReceiveTime(SimClock.getTime());
-		
-		Message outgoing = incoming;
-		for (Application app : getApplications(incoming.getAppID())) {
-			// Note that the order of applications is significant
-			// since the next one gets the output of the previous.
-			outgoing = app.handle(outgoing, getHost());
-			if (outgoing == null) break; // Some app wanted to drop the message
-		}
-		
-		Message aMessage = (outgoing==null)?(incoming):(outgoing);
-		
-		boolean isFinalRecipient = decider.isFinalDest(aMessage, getHost());
-		boolean isFirstDelivery =  isFinalRecipient && 
-			!isDeliveredMessage(aMessage);
-		
-		if (outgoing!=null && decider.shouldSaveReceivedMessage(aMessage, getHost())) 
-		{
-			// not the final recipient and app doesn't want to drop the message
-			// -> put to buffer
-			addToMessages(aMessage, false);
-			
-			// Determine any other connections to which to forward a message
-			findConnectionsForNewMessage(aMessage, from);
-		}
-		
-		if (isFirstDelivery)
-		{
-			this.deliveredMessages.put(id, aMessage);
-		}
-		
-		for (MessageListener ml : this.mListeners) {
-			ml.messageTransferred(aMessage, from, getHost(),
-					isFirstDelivery);
-		}
-		*/
                 
 		return aMessage;
 	}
@@ -517,41 +411,13 @@ public class DecisionEngineRouter extends ActiveRouter
 			core.Debug.p("Error, attempted to send a message that isn't available anymore " + con);
 		}
                 
-		for(Iterator<Tuple<Message, Connection>> i = outgoingMessages.iterator(); 
-		i.hasNext();)
-		{
-			Tuple<Message, Connection> t = i.next();
-                        
-			if(t.getKey().getId().equals(transferred.getId()) && 
-					t.getValue().equals(con))
-			{
-				i.remove();
-				break;
-			}
-		}
+                removeMessgageFromOutgoing(transferred.getId(), con);
                 
 		if(decider.shouldDeleteSentMessage(transferred, con.getOtherNode(getHost())))
 		{
 			//if(transferred.getId().equals("M14"))
 			//	System.out.println("Host: " + getHost() + " deleting M14 after transfer");
-                        /*
-                        if (transferred.getTo() == con.getOtherNode(getHost())){
-                            System.out.println("Test is receipient");
-                        }else{
-                            System.out.println("Test is not-receipient");
-                        }*/
-                        
 			this.deleteMessage(transferred.getId(), false);
-			
-			for(Iterator<Tuple<Message, Connection>> i = outgoingMessages.iterator(); 
-			i.hasNext();)
-			{
-				Tuple<Message, Connection> t = i.next();
-				if(t.getKey().getId().equals(transferred.getId()))
-				{
-					i.remove();
-				}
-			}
 		}
 	}
 
@@ -562,6 +428,12 @@ public class DecisionEngineRouter extends ActiveRouter
 		if (!canStartTransfer() || isTransferring()) {
 			return; // nothing to transfer or is currently transferring 
 		}
+                
+                //Corey - added this in, and delivers a lot more messages
+                // Try messages that could be delivered to final recipient
+                if (exchangeDeliverableMessages() != null) {
+                    return;
+                }
 		
 		for(Iterator<Tuple<Message, Connection>> i = outgoingMessages.iterator(); 
 			i.hasNext();)
@@ -576,12 +448,30 @@ public class DecisionEngineRouter extends ActiveRouter
                 /*Corey - Bug Fix - Simple, but important - 
                 tryMessagesForConnected(). Should be called after 
                 outgoingMessages is updated. This is because messages can be 
-                removed due to expired ttl's etc., so need to update the 
+                removed due to expired ttl's or buffer overflow, so need to update the 
                 outgoing messages accordingly. i.e like when the 
                 ActiveRouter.makeRoomForMessage() deletes mesages. 
                 */
                 tryMessagesForConnected(outgoingMessages);
 	}
+        
+        protected boolean removeMessgageFromOutgoing(String messageID, Connection con)
+        {
+         
+            for(Iterator<Tuple<Message, Connection>> i = outgoingMessages.iterator(); 
+		i.hasNext();)
+		{
+			Tuple<Message, Connection> t = i.next();
+                        
+			if(t.getKey().getId().equals(messageID) && 
+					t.getValue().equals(con))
+			{
+				i.remove();
+                                return true;
+			}
+		}
+            return false;
+        }
 	
 	public RoutingDecisionEngine getDecisionEngine()
 	{

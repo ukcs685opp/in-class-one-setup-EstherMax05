@@ -149,7 +149,7 @@ public class DistributedBubbleRap
 		// add this connection to the list
 		if(etime - time > 0)
 			history.add(new Duration(time, etime));
-		
+                
 		CommunityDetection peerCD = this.getOtherDecisionEngine(peer).community;
 		
 		// inform the community detection object that a connection was lost.
@@ -188,26 +188,40 @@ public class DistributedBubbleRap
 		 */
 		DTNHost dest = m.getTo();
 		DistributedBubbleRap de = getOtherDecisionEngine(otherHost);
-		
+                
 		// Which of us has the dest in our local communities, this host or the peer
 		boolean peerInCommunity = de.commumesWithHost(dest);
 		boolean meInCommunity = this.commumesWithHost(dest);
-		
-		if(peerInCommunity && !meInCommunity) // peer is in local commun. of dest
+                
+                /*Corey - Ensures that global and local centralities are are always 
+                calculated at the same time, the Centrality method will handle the 
+                actual interval. This leads to more computations even when they 
+                are not needed*/
+                /*
+                double myLocalCentrality = this.getLocalCentrality();
+                double peerLocalCentrality = de.getLocalCentrality();
+                double myGlobalCentrality = this.getGlobalCentrality();
+                double peerGlobalCentrality = de.getGlobalCentrality();
+                */
+                
+		if(peerInCommunity && !meInCommunity){ // peer is in local commun. of dest
 			return true;
+                }
 		else if(!peerInCommunity && meInCommunity) // I'm in local commun. of dest
 			return false;
 		else if(peerInCommunity) // we're both in the local community of destination
 		{
 			// Forward to the one with the higher local centrality (in our community)
-			if(de.getLocalCentrality() > this.getLocalCentrality())
+			if(de.getLocalCentrality() > this.getLocalCentrality()){
 				return true;
+                        }
 			else
 				return false;
 		}
 		// Neither in local community, forward to more globally central node
-		else if(de.getGlobalCentrality() > this.getGlobalCentrality())
+		else if(de.getGlobalCentrality() > this.getGlobalCentrality()){
 			return true;
+                }
 		
 		return false;
 	}

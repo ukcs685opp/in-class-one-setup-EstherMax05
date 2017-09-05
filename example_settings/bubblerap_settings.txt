@@ -1,13 +1,20 @@
 Scenario.name = bubblerap_test_0_1_%%Group.router%%_%%MovementModel.rngSeed%%_%%Scenario.endTime%%
 
 Group.router = BubbleRapRouter
-#BubbleRapRouter.communityAlg = routing.community.KCliqueCommunityDetection
+#Community detection Alg
+BubbleRapRouter.communityAlg = DistributedKCliqueCommunityDetection
+#Community detection common peer threshold for adding a connected peer to your clique
 BubbleRapRouter.k = 5
-BubbleRapRouter.nrOfEpochsToAvg = 5
-BubbleRapRouter.timeWindow = 21600
+#Community detection clique threshold to place someone in the clique
 BubbleRapRouter.familiarThreshold = 700
-#BubbleRapRouter.timeWindow = 5
-#BubbleRapRouter.centralityAlg = routing.centrality.CWindowCentrality
+#Centrality Alg - can be CWindowCentrality or AvgDegreeCentrality
+BubbleRapRouter.centralityAlg = CWindowCentrality
+#Centrality Alg - window size of each epoch
+BubbleRapRouter.timeWindow = 21600
+#Interval to compute centrality
+BubbleRapRouter.computeInterval = 600
+#Centrality Alg - Number of epochs to average
+BubbleRapRouter.nrOfEpochsToAvg = 5
 
 # how many reports to load
 Report.nrofReports = 5

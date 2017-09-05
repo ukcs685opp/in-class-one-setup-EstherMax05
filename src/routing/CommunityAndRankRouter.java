@@ -208,6 +208,13 @@ public abstract class CommunityAndRankRouter extends ActiveRouter {
             // Get the reference to the router of the other node
             DTNHost otherNode = con.getOtherNode(getHost());
             final CommunityAndRankRouter otherRouter = (CommunityAndRankRouter) otherNode.getRouter();
+            
+            /*Corey - The below centality calls lead to more computations even when they 
+                are not needed. For example, pitt version only calculates 
+            local/global centralities based on order of if statements in 
+            DistributedBubbleRouter.shouldSendMessageToHost(), which doesn't 
+            calculate centralities if a decision can be made strictly off of
+            community*/
             final double myLocalRank = getLocalRank();
             final double otherLocalRank = otherRouter.getLocalRank();
             final double myGlobalRank = getGlobalRank();
@@ -222,6 +229,7 @@ public abstract class CommunityAndRankRouter extends ActiveRouter {
                     continue; // skip messages that the other one has
                 }
                 final DTNHost destHost = m.getTo();
+                
                 Message msg = shouldSend(destHost, otherRouter, myGlobalRank, otherGlobalRank, myLocalRank, otherLocalRank, m);
                 if (msg != null) {
                     messages.add(new Tuple<Message, Connection>(msg, con));
